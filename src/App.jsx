@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BookingSlot from './BookingSlot';
+import ReservationListe from './assets/ReservationListe';
+
 
 function App() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [confirmed, setConfirmed] = useState(false);
-  const [reservations, setReservations] = useState([]);
 
   const slots = ['09:00', '10:00', '11:00', '14:00', '15:00'];
+  const [reservations, setReservations] = useState(() => {
+    const saved = localStorage.getItem('reservations');
+    return saved ? JSON.parse(saved) : [];
+  });
 
+  useEffect(() => {
+    localStorage.setItem('reservations', JSON.stringify(reservations));
+  }, [reservations]);
   const handleBooking = (slot) => {
     setSelectedSlot(slot);
     setConfirmed(false);
@@ -33,7 +41,26 @@ function App() {
     setSelectedSlot(null);
         setConfirmed(true);
   };
-
+    const exportCSV = () => {
+      const headers = ['Nom', 'Email', 'Créneau', 'Date'];
+      const rows = reservations.map((r) => [r.name, r.email, r.slot, r.date]);
+    
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+    
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'reservations.csv');
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+  
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
       <div className="bg-white rounded shadow p-6 w-full max-w-md fade-in">
@@ -93,20 +120,11 @@ function App() {
         )}
       </div>
       {reservations.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-lg font-bold mb-2 text-gray-800">Réservations :</h2>
-          <ul className="space-y-2 text-sm text-gray-700 max-h-64 overflow-auto">
-          {reservations.map((r, index) => (
-              <li key={index} className="border p-3 rounded bg-gray-50">
-                <strong>{r.name}</strong> ({r.email}) – {r.slot} le {r.date}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
+          <div className="mt-6">
+            <ReservationListe reservations={reservations} onExport={exportCSV} />
+          </div>
+        )}
     </div>
-    
   );
 }
 

@@ -26,6 +26,18 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const isDuplicate = reservations.some(
+      (r) =>
+        r.email === email &&
+        r.date === selectedDate &&
+        r.slot === selectedSlot
+    );
+  
+    if (isDuplicate) {
+      alert("Une réservation existe déjà pour ce créneau avec cet email.");
+      return;
+    }
+  
     const newReservation = {
       name,
       email,

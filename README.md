@@ -1,12 +1,69 @@
-# React + Vite
+# 📅 Quick Reservation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Quick Reservation** is a simple and elegant web application built with **React**, **Tailwind CSS**, and **Vite**, allowing users to book a time slot and date. All reservations are stored locally using `localStorage` and can be exported in CSV format.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo
 
-## Expanding the ESLint configuration
+<img src="public/demo.png" alt="Quick Reservation UI" width="600"/>
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ✨ Features
+
+- Select a time slot from a dropdown
+- Choose a reservation date using a native date picker
+- Enter full name and email address
+- Save reservations to `localStorage` (persistent between sessions)
+- View the full reservation list sorted by date and time
+- Export reservations as `.csv` file
+- Mobile-friendly, responsive interface built with Tailwind CSS
+
+---
+
+## 🛠️ Tech Stack
+
+- [React](https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- HTML5 / CSS3
+- `localStorage` (no backend needed)
+
+---
+
+## 🔧 Getting Started
+
+To run the project locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/Azzeddine45/quick-reservation.git
+cd quick-reservation
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+
+quick-reservation/
+├── public/
+│   └── logo.png
+├── src/
+│   ├── App.jsx
+│   ├── assets/
+│   │   ├── BookingForm.jsx
+│   │   └── ReservationListe.jsx
+│   ├── BookingSlot.jsx
+│   └── index.css
+├── tailwind.config.js
+├── postcss.config.js
+├── vite.config.js
+└── README.md
+
+# Example structur for csv file
+
+Name,Email,Slot,Date
+name,name@mail.com,09:00,2025-07-13

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import BookingSlot from './BookingSlot';
 import ReservationListe from './assets/ReservationListe';
-
+import BookingForm from './assets/BookingForm';
 
 function App() {
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
-  const slots = ['09:00', '10:00', '11:00', '14:00', '15:00'];
+  const slots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
   const [reservations, setReservations] = useState(() => {
     const saved = localStorage.getItem('reservations');
     return saved ? JSON.parse(saved) : [];
@@ -29,7 +30,7 @@ function App() {
       name,
       email,
       slot: selectedSlot,
-      date: new Date().toLocaleDateString(),
+      date: selectedDate,
     };
     
     setReservations([...reservations, newReservation]);
@@ -39,7 +40,8 @@ function App() {
     setName('');
     setEmail('');
     setSelectedSlot(null);
-        setConfirmed(true);
+    setConfirmed(true);
+    setSelectedDate('');
   };
     const exportCSV = () => {
       const headers = ['Nom', 'Email', 'Créneau', 'Date'];
@@ -74,53 +76,40 @@ function App() {
           Réservez un créneau
         </h1>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-          {slots.map((slot) => (
-            <BookingSlot key={slot} slot={slot} onBook={handleBooking} />
-          ))}
+        <div className="mb-4">
+          <label htmlFor="slot" className="block text-sm font-medium text-gray-700 mb-1">
+            Choisissez un créneau :
+          </label>
+          <select
+            id="slot"
+            value={selectedSlot || ''}
+            onChange={(e) => handleBooking(e.target.value)}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="" disabled>-- Sélectionnez un horaire --</option>
+            {slots.map((slot) => (
+              <option key={slot} value={slot}>{slot}</option>
+            ))}
+          </select>
         </div>
-
         {selectedSlot && (
-          <>
-            <p className="text-sm text-gray-700 mb-2 text-center">
-              Créneau sélectionné : <strong>{selectedSlot}</strong>
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input
-                type="text"
-                placeholder="Votre nom"
-                className="w-full border p-2 rounded"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <input
-                type="email"
-                placeholder="Votre email"
-                className="w-full border p-2 rounded"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <button
-                type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded font-semibold"
-              >
-                Confirmer la réservation
-              </button>
-            </form>
-
-            {confirmed && (
-              <p className="mt-4 text-green-600 font-medium text-center">
-                ✅ Réservation confirmée pour <strong>{selectedSlot}</strong> !
-              </p>
-            )}
-          </>
+          <BookingForm
+            selectedSlot={selectedSlot}
+            selectedDate={selectedDate}
+            name={name}
+            email={email}
+            confirmed={confirmed}
+            onNameChange={(e) => setName(e.target.value)}
+            onEmailChange={(e) => setEmail(e.target.value)}
+            onDateChange={(e) => setSelectedDate(e.target.value)}
+            onSubmit={handleSubmit}
+          />
         )}
+
       </div>
       {reservations.length > 0 && (
-          <div className="mt-6">
+          <div className="mt-6 ml-4">
             <ReservationListe reservations={reservations} onExport={exportCSV} />
           </div>
         )}

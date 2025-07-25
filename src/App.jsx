@@ -64,8 +64,8 @@ function App() {
     };
   
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white rounded shadow p-6 w-full max-w-md fade-in">
+<div className="min-h-screen bg-gray-100 flex flex-col-reverse md:flex-row items-start justify-center px-4 py-8 gap-4">
+<     div className="bg-white rounded shadow p-6 w-full max-w-md fade-in">
         <img
           src="logo.png"
           alt="Logo"

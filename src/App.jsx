@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import BookingSlot from './BookingSlot';
 import ReservationListe from './assets/ReservationListe';
 import BookingForm from './assets/BookingForm';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { db } from './firebase'; // Assure-toi du bon chemin
 
 function App() {
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -11,20 +13,23 @@ function App() {
   const [confirmed, setConfirmed] = useState(false);
 
   const slots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
-  const [reservations, setReservations] = useState(() => {
-    const saved = localStorage.getItem('reservations');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [reservations, setReservations] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem('reservations', JSON.stringify(reservations));
-  }, [reservations]);
-  const handleBooking = (slot) => {
-    setSelectedSlot(slot);
-    setConfirmed(false);
-  };
+    const fetchReservations = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'reservations'));
+        const data = snapshot.docs.map(doc => doc.data());
+        setReservations(data);
+      } catch (error) {
+        console.error('Erreur de chargement Firestore :', error);
+      }
+    };
 
-  const handleSubmit = (e) => {
+    fetchReservations();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const isDuplicate = reservations.some(
       (r) =>
@@ -44,8 +49,20 @@ function App() {
       slot: selectedSlot,
       date: selectedDate,
     };
+
+    try {
+      await addDoc(collection(db, 'reservation'), newReservation);
+      console.log('Réservation ajoutée !');
+      setReservations([...reservations, newReservation]);
+      setConfirmed(true);
+      setName('');
+      setEmail('');
+      setSelectedSlot(null);
+      setSelectedDate('');
+    } catch (error) {
+      console.error('Erreur lors de l’ajout : ', error);
+    }
     
-    setReservations([...reservations, newReservation]);
     setConfirmed(true);
     
     // Optionnel : reset du formulaire
@@ -54,6 +71,10 @@ function App() {
     setSelectedSlot(null);
     setConfirmed(true);
     setSelectedDate('');
+  };
+  const handleBooking = (slot) => {
+    setSelectedSlot(slot);
+    setConfirmed(false);
   };
     const exportCSV = () => {
       const headers = ['Nom', 'Email', 'Créneau', 'Date'];
